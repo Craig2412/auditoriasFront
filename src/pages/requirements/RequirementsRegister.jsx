@@ -4,6 +4,7 @@ import React, {useState} from 'react'
 import SearchRequest from 'components/requests/SearchRequest'
 import List from 'components/list/List'
 import Panel from 'components/panel/Panel'
+import Blocker from '../../components/login/Blocker'
 
 //axios
 import axios from 'axios'
@@ -31,7 +32,7 @@ const RequirementsRegister=()=>{
         id_status:1,
         id_worker:2
     })
-
+console.log(requirements)
     const deleteRequest=(request)=>{
         insertRequests(
             requests.filter(r=>r.request !== request)
@@ -63,6 +64,7 @@ const RequirementsRegister=()=>{
 
     return( 
         <div className="columns is-centered is-multiline">
+            <Blocker />
             <div className="column is-12">
                 <Panel title='Requerimientos' subtitle='Ingresar' foot={
                         {

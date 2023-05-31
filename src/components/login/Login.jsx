@@ -5,32 +5,31 @@ import {Link} from 'react-router-dom'
 
 //redux
 import {connect} from 'react-redux'
+import {authUsuario} from '../../actions/authActions'
 
-//importar axios
-import axios from 'axios'
+//Alertas
+import alerta from '../alert/Alert'
 
-//var
-import {rutaAxios} from 'variablesGoblales'
-
-const Login=({SelectCenter, insertSiteCenter})=>{
+const Login=({SelectCenter, insertSiteCenter, authUsuario})=>{
+    
+    if (localStorage.getItem('token')) {
+       window.location = '/dashboard'
+    }  
     
     const [login, insertLogin] = useState({
         user:"",
         pass:""
     }) 
-    
-    let inicio = async ()=>{
-        await axios.get(rutaAxios , {params : {user : login.user , pass : login.pass }})
-        .then(response=>{
-            console.log(response.data)
-        })
-        .catch(error=>{
-            console.log(error)
-        })
-    } 
 
+    const onClick = async ()=>{
+        const inLog = await authUsuario(login)
+        if (inLog === true) {
+            alerta.open({type:"success", message:'Credenciales Aceptadas'})
+            window.location = '/dashboard'
+        }
+} 
     return (
-            <React.Fragment>
+        <React.Fragment>
                 <div className="box pl-5 pr-5 z-index-1 animate__animated animate__fadeInLeft">
                     <SelectCenter insertSiteCenter={insertSiteCenter} site='Login'/>
                     <div className='mb-5 mr-5 ml-5 '>
@@ -64,8 +63,8 @@ const Login=({SelectCenter, insertSiteCenter})=>{
                                     <i className="fas fa-lock"></i>
                                 </span>
                             </div>
-                            <button className = "button is-fullwidth is-blue mb-4" onSubmit={inicio()}>Ingresar</button>
                         </form>
+                            <button className = "button is-fullwidth is-blue mb-4" onClick={onClick}>Ingresar</button>
                         	
                     </div>
                     <div className='mb-4'>
@@ -82,8 +81,8 @@ const Login=({SelectCenter, insertSiteCenter})=>{
     )
 }
 
-const mapStateToProps = (state) => ({
-	appointments:state.appointment.appointments
+const mapStateToProps = (login) => ({
+	inicio:login
 });
 
-export default connect(mapStateToProps,null)(Login)
+export default connect(mapStateToProps,{authUsuario})(Login)

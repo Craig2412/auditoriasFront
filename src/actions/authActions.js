@@ -1,4 +1,4 @@
-import {AUTHENTICAR_USUARIO, DESLOGEAR_USUARIO} from '../actions/types'
+import {AUTHENTICATION_USER, DESLOGEAR_USER} from '../actions/types'
 
 import store from '../store'
 
@@ -8,9 +8,8 @@ import {rutaAxios} from 'variablesGoblales'
 
 import {setToken, deleteToken} from 'helpers/auth/auth'
 
-
-
 export const authUsuario = (body)  => async dispatch => {
+
     const myHeaders = new Headers()
 	    myHeaders.append('Content-type', 'application/json')
 
@@ -18,27 +17,27 @@ export const authUsuario = (body)  => async dispatch => {
 	      headers: myHeaders,
 	      body : JSON.stringify(body)  
 	    }
-    const respuesta = await axios.post(`${rutaAxios}user/public/api/user/authenticate`, myConfig)
-    
-    if (respuesta.data !== 'No user found' && respuesta.data !== 'undefined') {
-        store.subscribe( () => {
-            setToken(respuesta.data.Token)
-        });
-        
-        setTimeout(function(){ dispatch ({
-            type:AUTHENTICAR_USUARIO, 
-            payload: true
-        }) },1000);
 
-        return true
-    }
+    const respuesta = await axios.post(`${rutaAxios}auth/user/authentication`, myConfig)
+        if (respuesta.data !== 'No user found' && respuesta.data !== 'undefined') {
+            localStorage.setItem('token', respuesta.data.token)
+            store.subscribe( () => {
+                setToken(respuesta.data.token)
+            });
 
+
+            setTimeout(function(){ dispatch ({
+                type:AUTHENTICATION_USER, 
+                payload: true
+            }) },1000);
+
+            return true
+        }
     return false
-
 }
 export const authUsuarioManual = ()  => async dispatch => {
     dispatch ({
-        type:AUTHENTICAR_USUARIO, 
+        type:AUTHENTICATION_USER, 
         payload: true
     })
 }
@@ -55,7 +54,7 @@ export const comproUsuario = async (token) => {
 export const desUsuario = () => {
     if(deleteToken() === true){
         return {
-            type:DESLOGEAR_USUARIO
+            type:DESLOGEAR_USER
         }
     }
 }
